@@ -1,5 +1,0 @@
-[built-in options]
-c_std = 'c17'
-
-[binaries]
-c = 'C:\App\LLVM\bin\clang.exe'

@@ -1,7 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
-# Ensure the build directory exists
-mkdir -p build
+echo "Configuring ac_lib..."
 
-# Run Meson setup with the correct native file
-meson setup build --native-file native.build
+cmake -S . -G "Ninja" .. -B "./build" -DCMAKE_BUILD_TYPE=Release
+
+echo "Building ac_lib..."
+cd build
+ninja
