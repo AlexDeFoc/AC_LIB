@@ -1,5 +1,5 @@
-#ifndef A_C_LIB_STRING_MODULE
-#define A_C_LIB_STRING_MODULE
+#ifndef AC_LIB_STRING_MODULE
+#define AC_LIB_STRING_MODULE
 #include <stdint.h>
 
 typedef struct ac_string_t {

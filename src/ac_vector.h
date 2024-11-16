@@ -1,0 +1,3 @@
+#ifndef AC_LIB_VECTOR_MODULE
+#define AC_LIB_VECTOR_MODULE
+#endif
