@@ -8,29 +8,33 @@ typedef struct ac_string_t {
 } ac_string_t;
 
 typedef struct AC_STRING_CLASS {
-    // Takes in a "char *" aka a "string literal".
-    // Outputs ac_string_t object.
+    // Action: Creates string object.
+    // Arguments: Takes in a const string literal.
+    // Changes: Doesn't modify the string literal taken in.
+    // Returns: string object.
     ac_string_t (*create)(const char *text);
 
-
-    // Takes in a "ac_string_t" object.
-    // Clears, frees it and destroys it.
+    // Action: Destroys & frees the string object.
+    // Arguments: Takes in string object.
+    // Changes: modifies the string object.
     void (*destroy)(ac_string_t *string);
 
-
-    // Takes in a "ac_string_t" object.
-    // Doesn't modify the object.
-    // Returns "const char *" aka "const string literal".
+    // Action: Gets the address of the string.
+    // Arguments: Takes in string object.
+    // Changes: Doesn't modify the string object.
+    // Returns: address to const string literal.
     const char* (*get)(const ac_string_t *string);
 
-    // Takes in two "const ac_string_t" object.
-    // Doesn't modify either object.
-    // Returns 0 for 'found' | 1 for 'not found'.
+    // Action: Checks if the match object is present in the string object.
+    // Arguments: Takes in two string objects.
+    // Changes: Doesn't change either string object.
+    // Returns: 0 for 'found' | 1 for 'not found'.
     int (*match)(const ac_string_t *string, const ac_string_t *match);
 
-    // Takes in a "ac_string_t" object, "const char *" aka a "cosnt string literal".
-    // Doesn't modify the "const char *" primitive.
-    // Modifies the "ac_string_t" object.
+    // Action: Changes the text inside the string object.
+    // Arguments: Takes in const string literal.
+    // Changes: Doesn't modify the string literal taken in.
+    // Changes: Modifies the string object.
     void (*change)(ac_string_t *string, const char *text);
 } AC_STRING_CLASS;
 

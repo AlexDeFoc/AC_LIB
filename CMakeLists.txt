@@ -12,4 +12,4 @@ if(BUILD_TESTS)
     add_subdirectory(test)
 endif()
 
-add_library(ac_lib STATIC src/ac_string.c)
+add_library(ac_lib STATIC src/ac_string.c src/ac_vector.c)

@@ -3,6 +3,7 @@
 
 ## Contents:
 * AC_STRING
+* AC_VECTOR
 
 
 ## How to use a module?
@@ -20,7 +21,8 @@ then i can use the module after i include the _ac_lib.h_ wrapper.
 ## How to build
 
 In this documentation i'll explain assuming you'll use cmake. If not do it your own way.
-1. Clone the repository.
+1. Clone the repository.\
+1.1 modify the CMakeLists.txt file and change the variable called "BUILD_TESTS" to OFF.
 2. run the configuration.sh file if you aren't on windows.\
 2.1 if you are on windows then run this command which in the same directory as the CMakeLists.txt file:
 
@@ -52,27 +54,12 @@ expected from manual use of string literals.
 * Match
 * Change
 
+# AC_VECTOR functions
+* Create
+* Destroy
+* Get
+* Change
+* Push
+* Pop
 
-## Details on AC_STRING functions
-* ### Create function:
-Takes in a _"char * "_ aka a _"string literal"_.\
-Outputs ac_string_t object.
-
-* ### Destory function:
-Takes in a _"ac_string_t"_ object.\
-Clears, frees it and destroys it.
-
-* ### Get function:
-Takes in a _"ac_string_t"_ object.\
-Doesn't modify the object.\
-Returns _"const char * "_ aka _"const string literal"_.
-
-* ### Match function:
-Takes in two _"const ac_string_t"_ object.\
-Doesn't modify either object.\
-Returns _0_ for _'found'_ | _1_ for _'not found'_.
-
-* ### Change function:
-Takes in a _"ac_string_t"_ object, _"const char * "_ aka a _"cosnt string literal"_.\
-Doesn't modify the _"const char * "_ primitive.\
-Modifies the _"ac_string_t"_ object.
+## Documentation is provided in the header & source files for each module. Very clearly explained.

@@ -9,9 +9,11 @@
 
 AC_STRING_CLASS ac_string;
 
-// Takes in a "char *" aka a "string literal".
-// Outputs ac_string_t object.
-ac_string_t create(const char *text) {
+// Action: Creates string object.
+// Arguments: Takes in a const string literal.
+// Changes: Doesn't modify the string literal taken in.
+// Returns: string object.
+static ac_string_t create(const char *text) {
     struct ac_string_t string = {
         .data = NULL,
         .lenght = 0
@@ -41,9 +43,10 @@ ac_string_t create(const char *text) {
     return string;
 }
 
-// Takes in a "ac_string_t" object.
-// Clears, frees it and destroys it.
-void destroy(ac_string_t *string) {
+// Action: Destroys & frees the string object.
+// Arguments: Takes in string object.
+// Changes: modifies the string object.
+static void destroy(ac_string_t *string) {
     if (string->lenght == 0) {
         printf("No string found to destroy!\n");
         return;
@@ -54,9 +57,10 @@ void destroy(ac_string_t *string) {
     string->data = NULL;
 }
 
-// Takes in a "ac_string_t" object.
-// Doesn't modify the object.
-// Returns "const char *" aka "const string literal".
+// Action: Gets the address of the string.
+// Arguments: Takes in string object.
+// Changes: Doesn't modify the string object.
+// Returns: address to const string literal.
 const char* get(const ac_string_t *string) {
     if (string->lenght == 0) {
         printf("No string to provide!\n");
@@ -161,10 +165,11 @@ int match_single_char_string(const ac_string_t *text, const ac_string_t *match) 
     return AC_BAD;
 }
 
-// Takes in two "const ac_string_t" object.
-// Doesn't modify either object.
-// Returns 0 for 'found' | 1 for 'not found'.
-int match (const ac_string_t *text, const ac_string_t *match) {
+// Action: Checks if the match object is present in the string object.
+// Arguments: Takes in two string objects.
+// Changes: Doesn't change either string object.
+// Returns: 0 for 'found' | 1 for 'not found'.
+static int match (const ac_string_t *text, const ac_string_t *match) {
     int result = -1;
     if (match->lenght > 1) {
         result = match_multiple_char_string(text, match);
@@ -175,10 +180,11 @@ int match (const ac_string_t *text, const ac_string_t *match) {
     return result;
 }
 
-// Takes in a "ac_string_t" object, "const char *" aka a "cosnt string literal".
-// Doesn't modify the "const char *" primitive.
-// Modifies the "ac_string_t" object.
-void change (ac_string_t *string, const char *text) {
+// Action: Changes the text inside the string object.
+// Arguments: Takes in const string literal.
+// Changes: Doesn't modify the string literal taken in.
+// Changes: Modifies the string object.
+static void change (ac_string_t *string, const char *text) {
     if (string->lenght <= 0) {
         printf("No matching string provided!\n");
         return;
@@ -205,4 +211,5 @@ void __attribute__((constructor)) init_AC_STRING_CLASS(void) {
     ac_string.destroy = destroy;
     ac_string.get = get;
     ac_string.match = match;
+    return;
 }
