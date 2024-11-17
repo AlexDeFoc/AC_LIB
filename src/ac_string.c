@@ -9,8 +9,13 @@ AC_STRING_CLASS ac_string;
 #define AC_GOOD 0
 #define AC_BAD 1
 
+/* Dictionary:
+'OOM': Out of memory.
+*/
+
 // Action: Creates string object.
-// Args type: const char *. [string literal].
+// Args type: const char *.
+// Args name: string_literal.
 // Returns: address to string object.
 static ac_string_t * create (const char *string_literal)
 { 
@@ -286,7 +291,7 @@ void ac_lib_init_string(void)
     ac_string.tracked_limit = 4;
     ac_string_t **obj_list = malloc(ac_string.tracked_limit * sizeof(ac_string_t *));
     if (obj_list == NULL) {
-        printf("OOM: vector list!\n");
+        printf("OOM: alloc string list!\n");
         return;
     }
 

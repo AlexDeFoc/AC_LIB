@@ -10,111 +10,100 @@
 AC_INPUT_CLASS ac_input;
 
 // Action: Creates input object.
-// Arguments: Takes in "const size_t" primitive.
-// Desc: The primitive represents the input limit.
-// Desc: The input limit can be 0 or over 0. If given 0 then it means there is not limit.
-// Warning: Size_t is an unsigned type meaning if a negative value is given it underflows.
-// Changes: The primitive is not modified.
-// Returns: address to input object.
-static ac_input_t *create (const size_t input_limit)
+// Args type: const size_t.
+// Args name: limit.
+// Returns: input object.
+static ac_input_t * create (const size_t limit)
 {
-    // Init empty object on the heap.
-    ac_input_t *input = malloc(sizeof(ac_input_t));
-    if (input == NULL) {
-        printf("Not enough memory for creating input object!\n");
+    // Alloc input object.
+    ac_input_t *object = malloc(sizeof(ac_input_t));
+    if (object == NULL) {
+        printf("OOM: alloc input object!\n");
         return NULL;
     }
 
-    // Initialize empty input object.
-    input->data = NULL;
-    input->lenght = 0;
-    input->input_limit = 0;
-    input->unlimited_input = 0;
-
-    // Validate arguments.
-    if (input_limit < 0) {
-        printf("Invalid input limit!\n");
-        return input;
-    }
+    // Initialize input object.
+    object->data = NULL;
+    object->lenght = 0;
+    object->input_limit = 0;
+    object->unlimited_input = 0;
 
     // Set unlimited input status.
-    if (input_limit == 0) input->unlimited_input = 1;
+    if (limit == 0) object ->unlimited_input = 1;
 
     // Set input limit based on input limit taken in.
-    if (input_limit == 0) {
-        input->input_limit = 100;
+    if (limit == 0) {
+        object->input_limit = 100;
     }
-    else if (input_limit > 0) {
-        input->input_limit = input_limit;
+    else if (limit > 0) {
+        object->input_limit = limit;
     }
 
     // Allocate data_block.
     char *data_block = NULL;
-    data_block = calloc(input->input_limit + 1, sizeof(char));
+    data_block = calloc(object->input_limit + 1, sizeof(char));
     if (data_block == NULL) {
-        printf("Not enough memory for allocating space for input object!\n");
-        return input;
+        printf("OOM: alloc input object!\n");
+        free(object);
+        return NULL;
     }
 
     // Assign data block.
-    input->data = data_block;
+    object->data = data_block;
 
-    // Track input object in class object list;
-    // Enlarge list if needed.
-    if (ac_input.tracked_objects_amount + 1 >= ac_input.tracking_objects_limit) {
-        ac_input_t **new_data_list = realloc(ac_input.tracked_objects_list, ac_input.tracking_objects_limit * 2 * sizeof(ac_input_t *));
+    // Enlarge track list if needed.
+    if (ac_input.tracked_count + 1 >= ac_input.tracked_limit) {
+        size_t tracked_new_limit = ac_input.tracked_limit * 2;
+
+        ac_input_t **new_data_list = realloc(ac_input.tracked_list, tracked_new_limit * sizeof(ac_input_t *));
         if (new_data_list == NULL) {
-            printf("Not enough memory to widen tracking objects list!\n");
-            return input;
+            printf("OOM: resizing track list!\n");
+            free(object);
+            return NULL;
         }
 
-        ac_input.tracked_objects_list = new_data_list;
-        ac_input.tracking_objects_limit *= 2;
+        ac_input.tracked_list = new_data_list;
+        ac_input.tracked_limit = tracked_new_limit;
     }
 
     // Add input object to list.
-    ac_input.tracked_objects_list[ac_input.tracked_objects_amount] = input;
-    ac_input.tracked_objects_amount++;
+    ac_input.tracked_list[ac_input.tracked_count] = object;
+    ac_input.tracked_count++;
 
     // Exit good.
-    return input;
+    return object;
 }
 
 // Action: Destroys input object.
-// Arguments: Takes in input object.
-// Changes: Modifies the input object taken in.
-static void destroy (ac_input_t *input)
+// Args type: input object.
+// Mutates: input object.
+static void destroy (ac_input_t *object)
 {
     //Validate input object.
-    if (input == NULL) {
-        printf("No input object provided!\n");
-        return;
-    }
-    if (input->data == NULL) {
+    if (object == NULL) {
         return;
     }
 
     // Destroy input object.
-    input->lenght = 0;
-    input->input_limit = 0;
-    input->unlimited_input = 0;
-    free(input->data);
-    input->data = NULL;
-    free(input);
-    input = NULL;
+    object->lenght = 0;
+    object->input_limit = 0;
+    object->unlimited_input = 0;
+    free(object->data);
+    free(object);
+    object = NULL;
 
     // Exit good.
     return;
 }
 
-// Action: Starts receiving input from stdin until a certain limit or until end of line found.
-// Arguments: Takes in input object.
-// Changes: Modifies the input object taken in.
-static void receive (ac_input_t *input)
+// Action: Receives input from stdin.
+// Args type: input object.
+// Mutates: input object.
+static void receive (ac_input_t *object)
 {
     // Validate input object.
-    if (input == NULL) {
-        printf("No input object provided!\n");
+    if (object == NULL) {
+        printf("Null input object!\n");
         return;
     }
 
@@ -129,114 +118,108 @@ static void receive (ac_input_t *input)
         if (c == EOF || c == '\n') break;
 
         // Check if input is limited or not.
-        if (input->unlimited_input == 1) {
-            // Widen input data block if we need. Double the input_limit.
-            if (received_amount >= input->input_limit) {
-                char *new_data_block = realloc(input->data, (input->input_limit * 2) + 1);
+        if (object->unlimited_input == 1) {
+            // Enlarge input data if needed. Double it.
+            if (received_amount >= object->input_limit) {
+                size_t new_limit = object->input_limit * 2;
+                char *new_data_block = realloc(object->data, new_limit + 1);
                 if (new_data_block == NULL) {
-                    printf("Not enough memory to widen the input data block!\n");
+                    printf("OOM: resizing input object!\n");
                     return;
                 }
 
-                input->data = new_data_block;
-                input->input_limit *= 2;
+                object->data = new_data_block;
+                object->input_limit = new_limit;
             }
 
             // Add char to input object.
-            input->data[received_amount] = c;
+            object->data[received_amount] = c;
             received_amount++;
-            input->lenght++;
+            object->lenght++;
         }
         else {
             // Exit upon limit reached.
-            if (received_amount >= input->input_limit) break;
+            if (received_amount >= object->input_limit) break;
 
             // Add char to input object.
-            input->data[received_amount] = c;
+            object->data[received_amount] = c;
             received_amount++;
-            input->lenght++;
+            object->lenght++;
         }
     }
 
     // Add null terminating char at end.
-    input->data[input->lenght] = '\0';
+    object->data[object->lenght] = '\0';
 
     // Exit good.
     return;
 }
 
-// Action: Gets the input contents from the input object.
-// Arguments: Takes in input object.
-// Changes: Doesn't change the input object taken in.
-// Returns: address to string literal inside input object.
-static const char *get (const ac_input_t *input)
+// Action: Gets string literal from inside the input object.
+// Args type: input object.
+// Returns: string literal.
+static const char *get (const ac_input_t *object)
 {
-    char *input_contents = NULL;
-
     // Validate input object.
     if (input == NULL) {
-        printf("No input object provided!\n");
-        return input_contents;
-    }
-    if (input->data == NULL) {
-        printf("Empty input object provided!\n");
-        return input_contents;
+        printf("Null input object!\n");
+        return NULL;
     }
 
-    // Get input contents from input object.
-    input_contents = input->data;
-
-    // Exit good.
-    return (const char*) input_contents;
+    // Return input object data.
+    return (const char*)input->data;
 }
 
-// Action: Resets input object. It calls destory then create without having to reenter the input limit.
-// Arguments: Takes in input object.
-// Changes: Modifies the input object.
-static void reset (ac_input_t *input)
+// Action: Destorys then creates a new input object.
+// Args type: input object.
+// Mutates: input object.
+static void reset (ac_input_t *object)
 {
     // Validate input object.
-    if (input == NULL) {
-        printf("No input object provided!\n");
-        return;
-    }
-    if (input->data == NULL) {
-        printf("Empty input object provided!\n");
+    if (object == NULL) {
+        printf("Null input object!\n");
         return;
     }
 
     // Store input_limit based on unlimited input status.
     size_t input_limit = 0;
-    if (input->unlimited_input == 0) {
-        input_limit = input->input_limit;
+    if (object->unlimited_input == 0) {
+        input_limit = object->input_limit;
     }
 
     // Destroy and create input object.
-    destroy(input);
-    input = create(input_limit);
+    destroy(object);
+    object = create(input_limit);
 
     // Exit good.
     return;
 }
 
-// Action: Calls destroy function for each tracked (created) object that isnt already destroyed.
+// Action: Calls destroy upon all items that were created.
 static void destructor (void)
 {
-    for (size_t i = 0; i < ac_input.tracked_objects_amount; i++) {
-        if (ac_input.tracked_objects_list[i] != NULL) {
-            destroy(ac_input.tracked_objects_list[i]);
+    // Validate track list.
+    if (ac_input.tracked_list == NULL) return;
+
+    // Loop.
+    for (size_t i = 0; i < ac_input.tracked_count; i++) {
+        if (ac_input.tracked_list[i] != NULL) {
+            destroy(ac_input.tracked_list[i]);
         }
     }
 
-    free(ac_input.tracked_objects_list);
+    // Destroy track list.
+    free(ac_input.tracked_list);
+    ac_input.tracked_list= NULL;
 
+    // Exit good.
     return;
 }
 
-// Action: Makes ac_input functions available.
+// Action: Makes ac_string functions available.
 void ac_lib_init_input(void)
 {
-    // Assign functions to ac_input class.
+    // Assign functions to ac_string class.
     ac_input.create = create;
     ac_input.destroy = destroy;
     ac_input.receive = receive;
@@ -244,15 +227,17 @@ void ac_lib_init_input(void)
     ac_input.reset = reset;
     ac_input.destructor = destructor;
 
-    // Initialize values and allocate memory for ac_input class.
-    ac_input.tracked_objects_amount = 0;
-    ac_input.tracking_objects_limit = 4;
-    ac_input_t **data_list = malloc(ac_input.tracking_objects_limit * sizeof(ac_input_t *));
-    if (data_list == NULL) {
-        printf("Not enough memory for creating tracking objects list!\n");
+    // Init Tracker
+    ac_input.tracked_count = 0;
+    ac_input.tracked_limit = 4;
+    ac_input_t **obj_list = malloc(ac_input.tracked_limit * sizeof(ac_input_t *));
+    if (obj_list == NULL) {
+        printf("OOM: alloc input list!\n");
         return;
     }
-    ac_input.tracked_objects_list = data_list;
 
+    ac_input.tracked_list = obj_list;
+
+    // Exit good.
     return;
 }

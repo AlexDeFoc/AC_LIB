@@ -1,6 +1,10 @@
 #ifndef AC_LIB_STRING_MODULE
 #define AC_LIB_STRING_MODULE
 
+/* Dictionary:
+'OOM': Out of memory.
+*/
+
 typedef struct ac_string_t {
     char *data;
     size_t lenght;
@@ -8,7 +12,8 @@ typedef struct ac_string_t {
 
 typedef struct AC_STRING_CLASS {
     // Action: Creates string object.
-    // Args type: const char *. [string literal].
+    // Args type: const char *.
+    // Args name: string_literal.
     // Returns: address to string object.
     ac_string_t * (*create) (const char *string_literal);
 

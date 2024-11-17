@@ -8,6 +8,11 @@ AC_VECTOR_CLASS ac_vector;
 #define AC_GOOD 0
 #define AC_BAD 1
 
+/* Dictionary:
+'OOM': Out of memory.
+'OOB': Out of bounds.
+*/
+
 // Action: Creates vector.
 // Returns: address to vector.
 static ac_vector_t * create (void)
@@ -224,7 +229,7 @@ void ac_lib_init_vector(void)
     ac_vector.tracked_limit = 4;
     ac_vector_t **obj_list = malloc(ac_vector.tracked_limit * sizeof(ac_vector_t *));
     if (obj_list == NULL) {
-        printf("OOM: vector list!\n");
+        printf("OOM: alloc vector list!\n");
         return;
     }
 

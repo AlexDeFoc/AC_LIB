@@ -11,43 +11,37 @@ typedef struct ac_input_t {
 } ac_input_t;
 
 typedef struct AC_INPUT_CLASS {
-    //// Functions for ac_input_t object.
     // Action: Creates input object.
-    // Arguments: Takes in "const size_t" primitive.
-    // Desc: The primitive represents the input limit.
-    // Desc: The input limit can be 0 or over 0. If given 0 then it means there is not limit.
-    // Warning: Size_t is an unsigned type meaning if a negative value is given it underflows.
-    // Changes: The primitive is not modified.
-    // Returns: address input object.
-    ac_input_t *(*create)(size_t input_limit);
+    // Args type: const size_t.
+    // Args name: limit.
+    // Returns: input object.
+    ac_input_t * (*create) (const size_t limit);
 
     // Action: Destroys input object.
-    // Arguments: Takes in input object.
-    // Changes: Modifies the input object taken in.
-    void (*destroy) (ac_input_t *input);
+    // Args type: input object.
+    // Mutates: input object.
+    void (*destroy) (ac_input_t *object);
 
-    // Action: Starts receiving input from stdin until a certain limit or until end of line found.
-    // Arguments: Takes in input object.
-    // Changes: Modifies the input object taken in.
-    void (*receive) (ac_input_t *input);
+    // Action: Receives input from stdin.
+    // Args type: input object.
+    // Mutates: input object.
+    void (*receive) (ac_input_t *object);
 
-    // Action: Gets the input contents from the input object.
-    // Arguments: Takes in input object.
-    // Changes: Doesn't change the input object taken in.
-    // Returns: address to string literal inside input object.
-    const char *(*get) (const ac_input_t *input);
+    // Action: Gets string literal from inside the input object.
+    // Args type: input object.
+    // Returns: string literal.
+    const char *(*get) (const ac_input_t *object);
 
-    // Action: Resets input object. It calls destory then create without having to reenter the input limit.
-    // Arguments: Takes in input object.
-    // Changes: Modifies the input object.
-    void (*reset) (ac_input_t *input);
+    // Action: Destorys then creates a new input object.
+    // Args type: input object.
+    // Mutates: input object.
+    void (*reset) (ac_input_t *object);
 
-    //// Tracking created objects.
-    ac_input_t **tracked_objects_list;
-    size_t tracked_objects_amount;
-    size_t tracking_objects_limit;
+    //// Tracker
+    ac_input_t **tracked_list;
+    size_t tracked_count;
+    size_t tracked_limit;
 
-    // Action: Calls destroy function for each tracked (created) object that isnt already destroyed.
     void (*destructor) (void);
 } AC_INPUT_CLASS;
 

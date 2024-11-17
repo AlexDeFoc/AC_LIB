@@ -1,6 +1,11 @@
 #ifndef AC_LIB_VECTOR_MODULE
 #define AC_LIB_VECTOR_MODULE
 
+/* Dictionary:
+'OOM': Out of memory.
+'OOB': Out of bounds.
+*/
+
 typedef struct ac_vector_t {
     void ** item_data;
     size_t item_count;
