@@ -11,6 +11,12 @@ typedef struct Player {
 
 int main()
 {
+    // Init string library.
+    ac_lib_init_string();
+
+    // Init vector library.
+    ac_lib_init_vector();
+
     // String testing.
     ac_string_t src = ac_string.create("Testing works!\n");
     printf("%s\n", ac_string.get(&src));

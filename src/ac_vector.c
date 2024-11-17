@@ -199,7 +199,7 @@ static void destroy (ac_vector_t *vector)
     return;
 }
 
-void __attribute__((constructor)) init_AC_VECTOR_CLASS(void)
+void ac_lib_init_vector(void)
 {
     ac_vector.create = create;
     ac_vector.push = push;

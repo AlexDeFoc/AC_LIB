@@ -40,6 +40,6 @@ typedef struct AC_STRING_CLASS {
 
 extern AC_STRING_CLASS ac_string;
 
-void init_AC_STRING_CLASS(void);
+void ac_lib_init_string(void);
 
 #endif

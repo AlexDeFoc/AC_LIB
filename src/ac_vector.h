@@ -49,6 +49,6 @@ typedef struct AC_VECTOR_CLASS {
 
 extern AC_VECTOR_CLASS ac_vector;
 
-void init_AC_VECTOR_CLASS(void);
+void ac_lib_init_vector(void);
 
 #endif

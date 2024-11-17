@@ -206,7 +206,7 @@ static void change (ac_string_t *string, const char *text) {
     return;
 }
 
-void __attribute__((constructor)) init_AC_STRING_CLASS(void) {
+void ac_lib_init_string(void) {
     ac_string.create = create;
     ac_string.destroy = destroy;
     ac_string.get = get;
