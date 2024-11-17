@@ -7,12 +7,6 @@ typedef struct ac_vector_t {
     size_t item_limit;
 } ac_vector_t;
 
-/* Dictionary:
-'OOM': Out of memory.
-'ERR': Unexpected error.
-'OOB': Out of bounds.
-*/
-
 typedef struct AC_VECTOR_CLASS {
     // Action: Creates vector.
     // Returns: address to vector.

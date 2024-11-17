@@ -3,16 +3,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-/* Dictionary:
-'OOM': Out of memory.
-'ERR': Unexpected error.
-'OOB': Out of bounds.
-*/
+AC_VECTOR_CLASS ac_vector;
 
 #define AC_GOOD 0
 #define AC_BAD 1
-
-AC_VECTOR_CLASS ac_vector;
 
 // Action: Creates vector.
 // Returns: address to vector.

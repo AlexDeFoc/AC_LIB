@@ -1,6 +1,12 @@
 #ifndef AC_LIB
 #define AC_LIB
 
+/* Dictionary:
+'OOM': Out of memory.
+'ERR': Unexpected error.
+'OOB': Out of bounds.
+*/
+
 // Introduced in v1.0
 #ifdef AC_LIB_STRING
 #include "ac_string.h"
