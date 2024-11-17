@@ -26,41 +26,26 @@ int main()
     ac_string_t *src = ac_string.create("Testing works!\n");
     printf("%s\n", ac_string.get(src));
     ac_string.destructor();
-    */
 
-    /*
     // Vector testing.
-    ac_vector_t vec = ac_vector.create(sizeof(int));
-    printf("Vec item data size: %zu\n", vec.item_data_size);
-
-    int a = 2;
-    ac_vector.push(&vec, &a);
-    int *a_addr = ac_vector.get(&vec, 0);
-    printf("a value: %d\n", *a_addr);
-
-    int b = 200000;
-    ac_vector.push(&vec, &b);
-    int *b_addr = ac_vector.get(&vec, 1);
-
-    int b_val = 100;
-    ac_vector.change(&vec, 1, &b_val);
-    printf("b value: %d\n", *b_addr);
-
-    printf("vec size before pop: %zu\n", vec.item_count);
-    ac_vector.pop(&vec);
-    printf("vec size after pop: %zu\n", vec.item_count);
-
-    ac_vector.destroy(&vec);
-
-    ac_vector_t vec2 = ac_vector.create(sizeof(Player));
-    printf("Data size of item in vec2: %zu\n", vec2.item_data_size);
-
-    // Heavy test
-    //Player p;
-    //ac_vector.push(&vec2, &p);
-
-    //ac_vector.destroy(&vec2);
+    ac_vector_t *v = ac_vector.create();
+    int a = 10;
+    ac_vector.push(v, &a);
+    int *a_addr = ac_vector.get(v, 0);
+    printf("Value of a: %d\n", *a_addr);
+    ac_vector.pop(v);
+    ac_vector.destructor();
     */
+
+    // String+Vector testing
+    ac_string_t *s_v = ac_string.create("Test string+vector");
+    ac_vector_t *vec_s = ac_vector.create();
+    ac_vector.push(vec_s, s_v);
+    ac_string_t *s_v_addr = ac_vector.get(vec_s, 0);
+    printf("s_v: %s\n", ac_string.get(s_v_addr));
+    ac_string.destructor();
+    ac_vector.destructor();
+    ac_vector.destructor();
 
     /*
     // Input testing.

@@ -2,49 +2,56 @@
 #define AC_LIB_VECTOR_MODULE
 
 typedef struct ac_vector_t {
-    size_t item_data_size;
+    void ** item_data;
     size_t item_count;
-    void * data;
+    size_t item_limit;
 } ac_vector_t;
 
+/* Dictionary:
+'OOM': Out of memory.
+'ERR': Unexpected error.
+'OOB': Out of bounds.
+*/
+
 typedef struct AC_VECTOR_CLASS {
-    // Action: Creates vector object.
-    // Arguments: Takes in "size_t" primitive.
-    // Desc: The primitive represents the size of each item in bits. Indended use with sizeof().
-    // Warning: Unexpected behaviour if negative value provided. Expected behaviour: underflows.
-    // Returns: vector object.
-    ac_vector_t (*create)(size_t item_data_size);
+    // Action: Creates vector.
+    // Returns: address to vector.
+    ac_vector_t * (*create) (void);
 
-    // Action: Pushes data into vector object.
-    // Arguments: Takes in vector, "const void *" primitive.
-    // Desc: The primitive represents the "data" that will be pushed into the vector.
-    // Changes: Doesn't modify the data taken in.
-    // Changes: Modifies the vector object.
-    void (*push) (ac_vector_t *vector, const void *data);
+    // Action: Destroys object.
+    // Args type: vector.
+    // Mutates: vector.
+    void (*destroy) (ac_vector_t *object);
 
-    // Action: Returns the address for the item in the vector at index.
-    // Arguments: Takes in vector object, "const int" primititve.
-    // Desc: The primitive represents the index. Vector is zero-indexed.
-    // Changes: Neither arguments taken in are modified.
-    void *(*get) (const ac_vector_t *vector, const int index);
+    // Action: Adds address at end of vector.
+    // Args type: vector, const void *.
+    // Args order: object, address.
+    // Mutates: vector.
+    void (*push) (ac_vector_t *object, const void *address);
 
-    // Action: Changes item data at index.
-    // Arguments: Takes in vector object, "const int" primitive, "const void *" primitive.
-    // Desc: The "const int" primitive represents the index of the item to modify.
-    // Desc: The "const void *" primitive represents the new data to be inserted into the item.
-    // Changes: Doesn't modify either the index or new data taken in.
-    // Changes: Modifies the vector object.
-    void (*change) (ac_vector_t *vector, const int index, const void *new_data);
+    // Action: Removes last address in the vector.
+    // Args type: vector.
+    // Mutates: vector.
+    void (*pop) (ac_vector_t *object);
 
-    // Action: Removes the last item in the vector.
-    // Arguments: Takes in vector object.
-    // Changes: Modifies the vector object.
-    void (*pop) (ac_vector_t *vector);
+    // Action: Gets the address at index from inside the vector.
+    // Args type: const vector, const size_t.
+    // Args order: object, index.
+    // Returns: void *.
+    void * (*get) (const ac_vector_t *object, const size_t index);
 
-    // Action: Frees all memory inside it and nulls the addresses.
-    // Arguments: Takes in vector object.
-    // Changes: Modifies the vector object.
-    void (*destroy) (ac_vector_t *vector);
+    // Action: Changes the address at index from inside the vector.
+    // Args type: vector, const size_t, const void *.
+    // Args order: object, index, address.
+    // Mutates: vector.
+    void (*change) (ac_vector_t *object, const size_t index, const void *address);
+
+    //// Tracker
+    ac_vector_t **tracked_list;
+    size_t tracked_count;
+    size_t tracked_limit;
+
+    void (*destructor) (void);
 } AC_VECTOR_CLASS;
 
 extern AC_VECTOR_CLASS ac_vector;

@@ -1,0 +1,249 @@
+#include "ac_vector.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define AC_GOOD 0
+#define AC_BAD 1
+
+AC_VECTOR_CLASS ac_vector;
+
+/* Dictionary:
+'OOM' - means out of memory
+*/
+
+// Action: Creates vector object list on the heap.
+// Returns: address to vector object list.
+static ac_vector_t * create (void)
+{
+    size_t item_limit = 4;
+
+    // Allocate memory for object.
+    ac_vector_t **object = malloc(item_limit * sizeof(ac_vector_t *));
+    if (object == NULL) {
+        printf("OOM: alloc vec list!\n");
+        return NULL;
+    }
+
+    // Initialize vector.
+    object->data = malloc(item_limit * sizeof(void *));
+    if (object->data == NULL) {
+        printf("Not enough memory for allocating space for vector object data!\n");
+        return NULL;
+    }
+    object->item_count = 0;
+    object->item_limit = item_limit;
+
+    // Track input object in class object list;
+    // Enlarge list if needed.
+    if (ac_vector.tracked_objects_amount + 1 >= ac_vector.tracking_objects_limit) {
+        ac_vector_t **new_data_list = realloc(ac_vector.tracked_objects_list, ac_vector.tracking_objects_limit * 2 * sizeof(ac_vector_t *));
+        if (new_data_list == NULL) {
+            printf("Not enough memory to widen tracking objects list!\n");
+            return NULL;
+        }
+
+        ac_vector.tracked_objects_list = new_data_list;
+        ac_vector.tracking_objects_limit *= 2;
+    }
+
+    // Add input object to list.
+    ac_vector.tracked_objects_list[ac_vector.tracked_objects_amount] = object;
+    ac_vector.tracked_objects_amount++;
+
+    // Return vector.
+    return object;
+}
+
+// Action: Frees & zero out.
+// Args type: vector object
+// Mutates: vector object
+static void destroy (ac_vector_t *object)
+{
+    // Validate vector object.
+    if (object == NULL) {
+        return;
+    }
+    if (object->data == NULL) {
+        return;
+    }
+
+    // Free & zero out
+    free(object->data);
+    object->item_count = 0;
+    object->item_limit = 0;
+    free(object);
+    object = NULL;
+
+    // Exit good.
+    return;
+}
+
+// Action: Adds address to data at the end of the vector.
+// Args type: vector object, const void *
+// Args order: [object, address]
+// Mutates: vector object
+static void push (ac_vector_t *object, const void *address)
+{
+    // Validate vector object & data.
+    if (object == NULL) {
+        printf("No vector object provided!\n");
+        return;
+    }
+    if (address == NULL) {
+        printf("No data provided!\n");
+        return;
+    }
+
+    // Enlarge vector object if needed.
+    if (object->item_count + 1 >= object->item_limit) {
+        void *new_data_block = realloc(object->data, object->item_limit * 2 * sizeof(void *));
+        if (new_data_block == NULL) {
+            printf("Not enough memory for enlarging vector!\n");
+            return;
+        }
+
+        object->data = new_data_block;
+        object->item_limit *= 2;
+    }
+
+    // Add data address to vector. Increment count.
+    (object->data)[object->item_count] = (void *)address;
+    printf("Past this!\n");
+    (object->item_count)++;
+
+    // Exit good.
+    return;
+}
+
+// Action: Removes last address from vector object.
+// Args type: vector object
+// Mutates: vector object
+static void pop (ac_vector_t *object)
+{
+    // Validate vector object.
+    if (object == NULL) {
+        printf("No vector provided!\n");
+        return;
+    }
+    if (object->item_count == 0) {
+        return;
+    }
+
+    // Shorten vector data block.
+    void *new_data_block = realloc(object->data, (object->item_count - 1) * sizeof(void *));
+    if (new_data_block == NULL) {
+        printf("Not enough memory for popping out address from end of vector object");
+        return;
+    }
+
+    // Assign shorter data block;
+    object->data = new_data_block;
+    (object->item_count)--;
+
+    return;
+}
+
+// Action: Gets address to data at index from vector object.
+// Args type: vector object, const int.
+// Args order: [object, index].
+// Note: index starts from zero.
+// Returns: address to data. Type: void *.
+static void * get (const ac_vector_t *object, const int index)
+{
+    // Valid vector object & index.
+    if (object == NULL) {
+        printf("No vector provided!\n");
+        return NULL;
+    }
+    if (object->data == NULL) {
+        printf("Empty vector provided!\n");
+        return NULL;
+    }
+    if (index < 0 || index >= object->item_count) {
+        printf("Out of bounds index provided!\n");
+        return NULL;
+    }
+
+    // Get data address from vector object.
+    void *data_address = (object->data)[index];
+
+    // Exit good.
+    return data_address;
+}
+
+// Action: Changes address at index in vector object.
+// Args type: vector object, const int, const void *.
+// Args order: [object, index, address].
+// Mutates: vector object.
+static void change (ac_vector_t *object, const int index, const void *address)
+{
+    // Validate vector object, index & address.
+    if (object == NULL) {
+        printf("No vector object provided!\n");
+        return;
+    }
+    if (object->data == NULL) {
+        printf("Empty vector object provided!\n");
+        return;
+    }
+    if (index < 0 || index >= object->item_count) {
+        printf("Out of bounds index provided!\n");
+        return;
+    }
+    if (address == NULL) {
+        printf("No new address provided!\n");
+        return;
+    }
+
+    // Get address to data.
+    (object->data)[index] = (void *)address;
+
+    // Exit good.
+    return;
+}
+
+// Action: Calls destroy function for each tracked (created) object that isnt already destroyed.
+static void destructor (void)
+{
+    // Loop through each created object and call destroy on it.
+    for (size_t i = 0; i < ac_vector.tracked_objects_amount; i++) {
+        if (ac_vector.tracked_objects_list[i] != NULL) {
+            destroy(ac_vector.tracked_objects_list[i]);
+            printf("Destroyed: %p\n", ac_vector.tracked_objects_list[i]);
+        }
+    }
+
+    // Destroy objects list.
+    free(ac_vector.tracked_objects_list);
+
+    // Exit good.
+    return;
+}
+
+// Action: Makes ac_vector functions available.
+void ac_lib_init_vector(void)
+{
+    // Assign functions to ac_vector class.
+    ac_vector.create = create;
+    ac_vector.destroy = destroy;
+    ac_vector.push = push;
+    ac_vector.pop = pop;
+    ac_vector.get = get;
+    ac_vector.change = change;
+    ac_vector.destructor = destructor;
+
+    // Initialize values and allocate memory for ac_vector class.
+    ac_vector.tracked_objects_amount = 0;
+    ac_vector.tracking_objects_limit = 4;
+    ac_vector_t **data_list = malloc(ac_vector.tracking_objects_limit * sizeof(ac_vector_t *));
+    if (data_list == NULL) {
+        printf("Not enough memory for creating tracking objects list!\n");
+        return;
+    }
+    ac_vector.tracked_objects_list = data_list;
+
+    // Exit good.
+    return;
+}

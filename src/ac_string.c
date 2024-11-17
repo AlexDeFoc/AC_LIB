@@ -51,22 +51,24 @@ static ac_string_t * create (const char *string_literal)
     }
     object->data[read_lenght] = '\0';
 
-    // Track input object in class object list;
-    // Enlarge list if needed.
-    if (ac_string.tracked_objects_amount + 1 >= ac_string.tracking_objects_limit) {
-        ac_string_t **new_data_list = realloc(ac_string.tracked_objects_list, ac_string.tracking_objects_limit * 2 * sizeof(ac_string_t *));
+    // Enlarge track list if needed.
+    if (ac_string.tracked_count + 1 >= ac_string.tracked_limit) {
+        size_t tracked_new_limit = ac_string.tracked_limit * 2;
+
+        ac_string_t **new_data_list = realloc(ac_string.tracked_list, tracked_new_limit * sizeof(ac_string_t *));
         if (new_data_list == NULL) {
-            printf("Not enough memory to widen tracking objects list!\n");
+            printf("OOM: resizing track list!\n");
+            free(object);
             return NULL;
         }
 
-        ac_string.tracked_objects_list = new_data_list;
-        ac_string.tracking_objects_limit *= 2;
+        ac_string.tracked_list = new_data_list;
+        ac_string.tracked_limit = tracked_new_limit;
     }
 
-    // Add input object to list.
-    ac_string.tracked_objects_list[ac_string.tracked_objects_amount] = object;
-    ac_string.tracked_objects_amount++;
+    // Add string to list.
+    ac_string.tracked_list[ac_string.tracked_count] = object;
+    ac_string.tracked_count++;
 
     // Exit good.
     return object;
@@ -261,18 +263,22 @@ static void change (ac_string_t *object, const char *string_literal)
     return;
 }
 
-// Action: Calls destroy function for each tracked (created) object that isnt already destroyed.
+// Action: Calls destroy upon all items that were created.
 static void destructor (void)
 {
-    // Loop through each created object and call destroy on it.
-    for (size_t i = 0; i < ac_string.tracked_objects_amount; i++) {
-        if (ac_string.tracked_objects_list[i] != NULL) {
-            destroy(ac_string.tracked_objects_list[i]);
+    // Validate track list.
+    if (ac_string.tracked_list == NULL) return;
+
+    // Loop.
+    for (size_t i = 0; i < ac_string.tracked_count; i++) {
+        if (ac_string.tracked_list[i] != NULL) {
+            destroy(ac_string.tracked_list[i]);
         }
     }
 
-    // Destroy objects list.
-    free(ac_string.tracked_objects_list);
+    // Destroy track list.
+    free(ac_string.tracked_list);
+    ac_string.tracked_list= NULL;
 
     // Exit good.
     return;
@@ -288,15 +294,16 @@ void ac_lib_init_string(void)
     ac_string.match = match;
     ac_string.destructor = destructor;
 
-    // Initialize values and allocate memory for ac_string class.
-    ac_string.tracked_objects_amount = 0;
-    ac_string.tracking_objects_limit = 4;
-    ac_string_t **data_list = malloc(ac_string.tracking_objects_limit * sizeof(ac_string_t *));
-    if (data_list == NULL) {
-        printf("Not enough memory for creating tracking objects list!\n");
+    // Init Tracker
+    ac_string.tracked_count = 0;
+    ac_string.tracked_limit = 4;
+    ac_string_t **obj_list = malloc(ac_string.tracked_limit * sizeof(ac_string_t *));
+    if (obj_list == NULL) {
+        printf("OOM: vector list!\n");
         return;
     }
-    ac_string.tracked_objects_list = data_list;
+
+    ac_string.tracked_list = obj_list;
 
     // Exit good.
     return;

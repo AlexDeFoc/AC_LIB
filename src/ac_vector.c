@@ -2,212 +2,240 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+
+/* Dictionary:
+'OOM': Out of memory.
+'ERR': Unexpected error.
+'OOB': Out of bounds.
+*/
 
 #define AC_GOOD 0
 #define AC_BAD 1
 
 AC_VECTOR_CLASS ac_vector;
 
-// Action: Creates vector object.
-// Arguments: Takes in "size_t" primitive.
-// Desc: The primitive represents the size of each item in bits. Indended use with sizeof().
-// Warning: Unexpected behaviour if negative value provided. Expected behaviour: underflows.
-// Returns: vector object.
-static ac_vector_t create (size_t item_data_size)
+// Action: Creates vector.
+// Returns: address to vector.
+static ac_vector_t * create (void)
 {
-    // Initialize empty vector.
-    ac_vector_t vector = {
-        .item_data_size = 0,
-        .item_count = 0,
-        .data = NULL
-    };
-
-    // Check if good item data size provided.
-    if (item_data_size == 0) {
-        printf("Invalid item data size!\n");
-        return vector;
+    // Alloc vector object.
+    ac_vector_t *object = malloc(sizeof(ac_vector_t));
+    if (object == NULL) {
+        printf("OOM: alloc vector object!\n");
+        return NULL;
     }
 
-    // Return vector.
-    vector.item_data_size = item_data_size;
-    return vector;
-}
-
-// Action: Pushes data into vector object.
-// Arguments: Takes in vector, "const void *" primitive.
-// Desc: The primitive represents the "data" that will be pushed into the vector.
-// Changes: Doesn't modify the data taken in.
-// Changes: Modifies the vector object.
-static void push (ac_vector_t *vector, const void *data)
-{
-    // Validate vector & data.
-    if (data == NULL) {
-        printf("No item provided!\n");
-        return;
+    // Init & alloc vector items.
+    object->item_limit = 4;
+    object->item_count = 0;
+    object->item_data = malloc(object->item_limit * sizeof(void *));
+    if (object->item_data == NULL) {
+        printf("OOM: alloc vector items!\n");
+        free(object);
+        return NULL;
     }
 
-    // Check if we are adding the first item or a new one.
-    if (vector->item_count == 0) {
-        // We are adding the first item.
-        void *data_block = calloc(1, vector->item_data_size);
-        if (data_block == NULL) {
-            printf("Not enough memory for adding item!\n");
-            return;
+    // Enlarge track list if needed.
+    if (ac_vector.tracked_count + 1 >= ac_vector.tracked_limit) {
+        size_t tracked_new_limit = ac_vector.tracked_limit * 2;
+
+        ac_vector_t **new_data_list = realloc(ac_vector.tracked_list, tracked_new_limit * sizeof(ac_vector_t *));
+        if (new_data_list == NULL) {
+            printf("OOM: resizing track list!\n");
+            free(object);
+            return NULL;
         }
 
-        vector->data = data_block;
-        vector->item_count = vector->item_count + 1;
-        memcpy(vector->data, data, vector->item_data_size);
+        ac_vector.tracked_list = new_data_list;
+        ac_vector.tracked_limit = tracked_new_limit;
     }
-    else {
-        // We are adding another item on top of the others.
-        void *data_block = realloc(vector->data, (vector->item_count + 1) * vector->item_data_size);
-        if (data_block == NULL) {
-            printf("Not enough memory for adding item!\n");
+
+    // Add vector to list.
+    ac_vector.tracked_list[ac_vector.tracked_count] = object;
+    ac_vector.tracked_count++;
+
+    // Exit good.
+    return object;
+}
+
+// Action: Destroys object.
+// Args type: vector.
+// Mutates: vector.
+static void destroy (ac_vector_t *object)
+{
+    // Validate vector.
+    if (object == NULL) {
+        return;
+    }
+
+    // Destroy vector.
+    free(object->item_data);
+    object->item_count = 0;
+    object->item_limit = 0;
+    free(object);
+
+    // Exit good.
+    return;
+}
+
+// Action: Adds address at end of vector.
+// Args type: vector, const void *.
+// Args order: object, address.
+// Mutates: vector.
+static void push (ac_vector_t *object, const void *address)
+{
+    // Validate vector.
+    if (object == NULL) {
+        printf("Null vector object!\n");
+        return;
+    }
+
+    // Resize vector if needed.
+    if (object->item_count >= object->item_limit) {
+        object->item_limit *= 2;
+        void **new_data = realloc(object->item_data, object->item_limit * sizeof(void *));
+        if (new_data == NULL) {
+            printf("OOM: resizing vector object!\n");
+            free(object->item_data);
             return;
         }
-
-        vector->data = data_block;
-        memcpy((char *)vector->data + (vector->item_count * vector->item_data_size), data, vector->item_data_size);
-        vector->item_count = vector->item_count + 1;
+        object->item_data = new_data;
     }
 
+    // Add address.
+    object->item_data[object->item_count] = (void *)address;
+    object->item_count++;
+
+    // Exit good.
     return;
 }
 
-// Action: Returns the address for the item in the vector at index.
-// Arguments: Takes in vector object, "const int" primititve.
-// Desc: The primitive represents the index. Vector is zero-indexed.
-// Changes: Neither arguments taken in are modified.
-static void * get(const ac_vector_t *vector, const int index)
+// Action: Removes last address in the vector.
+// Args type: vector.
+// Mutates: vector.
+static void pop (ac_vector_t *object)
 {
-    // Initialize empty item address.
-    void *item = NULL;
-
-    // Valid vector & index.
-    if (vector == NULL) {
-        printf("No vector provided!\n");
-        return NULL;
-    }
-    if (vector->data == NULL) {
-        printf("Empty vector provided!\n");
-        return NULL;
-    }
-    if (index < 0) {
-        printf("Invalid index provided!\n");
-        return NULL;
-    }
-    if (index >= vector->item_count) {
-        printf("Index out of range!\n");
-        return NULL;
-    }
-
-    // Get item from vector.
-    item = (char *)vector->data + (index * vector->item_data_size);
-
-    return item;
-}
-
-// Action: Changes item data at index.
-// Arguments: Takes in vector object, "const int" primitive, "const void *" primitive.
-// Desc: The "const int" primitive represents the index of the item to modify.
-// Desc: The "const void *" primitive represents the new data to be inserted into the item.
-// Changes: Doesn't modify either the index or new data taken in.
-// Changes: Modifies the vector object.
-static void change (ac_vector_t *vector, const int index, const void *new_data)
-{
-    // Validate vector & new_data & index.
-    if (vector == NULL) {
-        printf("No vector provided!\n");
+    // Validate vector & vector item count over 0.
+    if (object == NULL) {
+        printf("Null vector object!\n");
         return;
     }
-    if (vector->data == NULL) {
-        printf("Empty vector provided!\n");
-        return;
-    }
-    if (index < 0) {
-        printf("Invalid index provided!\n");
-        return;
-    }
-    if (index >= vector->item_count) {
-        printf("Index out of range!\n");
-        return;
-    }
-    if (new_data == NULL) {
-        printf("No new item provided!\n");
+    if (object->item_count <= 0) {
+        printf("Empty vector object!\n");
         return;
     }
 
-    // Get item address which we'll modify it's data.
-    void *item = get(vector, index);
+    // Clear the last item.
+    object->item_data[object->item_count - 1] = NULL;
 
-    // Change old_item to new_item.
-    memcpy((char *)vector->data + (index * vector->item_data_size), new_data, vector->item_data_size);
+    // Decrement item count.
+    object->item_count--;
 
+    //Resize when the count is less than a quarter of the limit.
+    if (object->item_count < object->item_limit / 4) {
+        size_t new_limit = object->item_limit / 2;
+        void **new_data = realloc(object->item_data, new_limit * sizeof(void *));
+        if (new_data != NULL) {
+            object->item_data = new_data;
+            object->item_limit = new_limit;
+        }
+    }
+
+    // Exit good.
     return;
 }
 
-// Action: Removes the last item in the vector.
-// Arguments: Takes in vector object.
-// Changes: Modifies the vector object.
-static void pop (ac_vector_t *vector)
+// Action: Gets the address at index from inside the vector.
+// Args type: const vector, const size_t.
+// Args order: object, index.
+// Returns: void *.
+static void * get (const ac_vector_t *object, const size_t index)
 {
-    // Validate vector object.
-    if (vector == NULL) {
-        printf("No vector provided!\n");
+    // Validate vector & index.
+    if (object == NULL) {
+        printf("Null vector object!\n");
+        return NULL;
+    }
+    if (index >= object->item_count) {
+        printf("OOB: invalid index!\n");
+        return NULL;
+    }
+
+    // Return address at index.
+    return object->item_data[index];
+}
+
+// Action: Changes the address at index from inside the vector.
+// Args type: vector, const size_t, const void *.
+// Args order: object, index, address.
+// Mutates: vector.
+static void change (ac_vector_t *object, const size_t index, const void *address)
+{
+    // Validate vector, index & address.
+    if (object == NULL) {
+        printf("Null vector object!\n");
         return;
     }
-    if (vector->item_count == 0) {
-        printf("Empty vector provided!\n");
+    if (index >= object->item_count) {
+        printf("OOB: invalid index!\n");
+        return;
+    }
+    if (address == NULL) {
+        printf("Null data address!\n");
         return;
     }
 
-    // Shorten vector data block.
-    void *new_block = realloc(vector->data, (vector->item_count - 1) * vector->item_data_size);
-    if (new_block == NULL) {
-        printf("Not enough memory for poping out the last item!\n");
-        return;
-    }
+    // Modify address at index inside vector.
+    object->item_data[index] = (void *)address;
 
-    // Assign shorter data block;
-    vector->data = new_block;
-    vector->item_count = vector->item_count - 1;
-
+    // Exit good.
     return;
 }
 
-// Action: Frees all memory inside it and nulls the addresses.
-// Arguments: Takes in vector object.
-// Changes: Modifies the vector object.
-static void destroy (ac_vector_t *vector)
+// Action: Calls destroy upon all items that were created.
+static void destructor (void)
 {
-    // Validate vector object.
-    if (vector == NULL) {
-        printf("No vector provided!\n");
-        return;
-    }
-    if (vector->data == NULL) {
-        printf("Vector already null!\n");
-        return;
+    // Validate track list.
+    if (ac_vector.tracked_list == NULL) return;
+
+    // Loop.
+    for (size_t i = 0; i < ac_vector.tracked_count; i++) {
+        if (ac_vector.tracked_list[i] != NULL) {
+            destroy(ac_vector.tracked_list[i]);
+        }
     }
 
-    // Destroy vector object.
-    free(vector->data);
-    vector->item_count = 0;
-    vector->item_data_size = 0;
+    // Destroy track list.
+    free(ac_vector.tracked_list);
+    ac_vector.tracked_list= NULL;
 
+    // Exit good.
     return;
 }
 
 // Action: Makes ac_vector functions available.
 void ac_lib_init_vector(void)
 {
+    // Assign functions to ac_vector class.
     ac_vector.create = create;
+    ac_vector.destroy = destroy;
     ac_vector.push = push;
+    ac_vector.pop = pop;
     ac_vector.get = get;
     ac_vector.change = change;
-    ac_vector.pop = pop;
-    ac_vector.destroy = destroy;
+    ac_vector.destructor = destructor;
+
+    // Init Tracker
+    ac_vector.tracked_count = 0;
+    ac_vector.tracked_limit = 4;
+    ac_vector_t **obj_list = malloc(ac_vector.tracked_limit * sizeof(ac_vector_t *));
+    if (obj_list == NULL) {
+        printf("OOM: vector list!\n");
+        return;
+    }
+
+    ac_vector.tracked_list = obj_list;
+
+    // Exit good.
     return;
 }

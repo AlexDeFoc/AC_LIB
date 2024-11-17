@@ -36,9 +36,9 @@ typedef struct AC_STRING_CLASS {
     void (*change) (ac_string_t *object, const char *string_literal);
 
     //// Tracking created objects.
-    ac_string_t **tracked_objects_list;
-    size_t tracked_objects_amount;
-    size_t tracking_objects_limit;
+    ac_string_t **tracked_list;
+    size_t tracked_count;
+    size_t tracked_limit;
 
     // Action: Calls destroy function for each tracked (created) object that isnt already destroyed.
     void (*destructor) (void);

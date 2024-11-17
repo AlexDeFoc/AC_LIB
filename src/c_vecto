@@ -1,0 +1,59 @@
+#ifndef AC_LIB_VECTOR_MODULE
+#define AC_LIB_VECTOR_MODULE
+
+typedef struct ac_vector_t {
+    void * item_data;
+    size_t item_count;
+    size_t item_limit;
+} ac_vector_t;
+
+typedef struct AC_VECTOR_CLASS {
+    //// Functions for ac_vector_t object.
+    // Action: Creates vector object on the heap.
+    // Returns: address to vector object
+    ac_vector_t * (*create) (void);
+
+    // Action: Frees & zeros out members.
+    // Args type: vector object
+    // Mutates: vector object
+    void (*destroy) (ac_vector_t *object);
+
+    // Action: Adds address to data at the end of the vector.
+    // Args type: vector object, const void *
+    // Args order: [object, address]
+    // Mutates: vector object
+    void (*push) (ac_vector_t *object, const void *address);
+
+    // Action: Removes last address from vector object.
+    // Args type: vector object
+    // Mutates: vector object
+    void (*pop) (ac_vector_t *object);
+
+    // Action: Gets address to data at index from vector object.
+    // Args type: vector object, const int
+    // Args order: [object, index]
+    // Note: index starts from zero.
+    void * (*get) (const ac_vector_t *object, const int index);
+
+    // Action: Changes address at index in vector object.
+    // Args type: vector object, const int, const void *
+    // Args order: [object, index, address]
+    // Mutates: vector object.
+    void (*change) (ac_vector_t *object, const int index, const void *address);
+
+
+    //// Tracking created objects.
+    ac_vector_t **tracked_objects_list;
+    size_t tracked_objects_amount;
+    size_t tracking_objects_limit;
+
+    // Action: Calls destroy function for each tracked (created) object that isnt already destroyed.
+    void (*destructor) (void);
+} AC_VECTOR_CLASS;
+
+extern AC_VECTOR_CLASS ac_vector;
+
+// Action: Makes ac_vector functions available.
+void ac_lib_init_vector(void);
+
+#endif
