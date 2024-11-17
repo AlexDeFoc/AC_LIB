@@ -153,7 +153,7 @@ static void change (ac_vector_t *vector, const int index, const void *new_data)
 // Changes: Modifies the vector object.
 static void pop (ac_vector_t *vector)
 {
-    // Validate vector.
+    // Validate vector object.
     if (vector == NULL) {
         printf("No vector provided!\n");
         return;
@@ -182,7 +182,7 @@ static void pop (ac_vector_t *vector)
 // Changes: Modifies the vector object.
 static void destroy (ac_vector_t *vector)
 {
-    // Validate vector.
+    // Validate vector object.
     if (vector == NULL) {
         printf("No vector provided!\n");
         return;
@@ -192,6 +192,7 @@ static void destroy (ac_vector_t *vector)
         return;
     }
 
+    // Destroy vector object.
     free(vector->data);
     vector->item_count = 0;
     vector->item_data_size = 0;
@@ -199,6 +200,7 @@ static void destroy (ac_vector_t *vector)
     return;
 }
 
+// Action: Makes ac_vector functions available.
 void ac_lib_init_vector(void)
 {
     ac_vector.create = create;

@@ -49,6 +49,7 @@ typedef struct AC_VECTOR_CLASS {
 
 extern AC_VECTOR_CLASS ac_vector;
 
+// Action: Makes ac_vector functions available.
 void ac_lib_init_vector(void);
 
 #endif

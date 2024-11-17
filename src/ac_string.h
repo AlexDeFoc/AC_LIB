@@ -40,6 +40,7 @@ typedef struct AC_STRING_CLASS {
 
 extern AC_STRING_CLASS ac_string;
 
+// Action: Makes ac_string functions available.
 void ac_lib_init_string(void);
 
 #endif

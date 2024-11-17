@@ -56,8 +56,5 @@ int main()
 
     ac_vector.destroy(&vec2);
 
-    ac_vector_t vec3 = ac_vector.create(-2);
-    printf("Data size of item in vec3: %zu\n", vec3.item_data_size);
-
     return 0;
 }

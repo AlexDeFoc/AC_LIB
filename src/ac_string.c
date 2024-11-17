@@ -13,13 +13,21 @@ AC_STRING_CLASS ac_string;
 // Arguments: Takes in a const string literal.
 // Changes: Doesn't modify the string literal taken in.
 // Returns: string object.
-static ac_string_t create(const char *text) {
+static ac_string_t create(const char *text)
+{ 
+    // Initializing empty string object.
     struct ac_string_t string = {
         .data = NULL,
         .lenght = 0
     };
 
+    // Check if we got null string literal.
+    if (text == NULL) {
+        printf("No string provided!\n");
+        return string;
+    }
 
+    // Check if size is lower or equal to zero.
     size_t read_lenght = strlen(text);
     if (read_lenght <= 0) {
         printf("No string provided!\n");
@@ -27,6 +35,7 @@ static ac_string_t create(const char *text) {
     }
     string.lenght = read_lenght;
 
+    // Allocate size for string literal.
     char *data_block = malloc((read_lenght + 1) * sizeof(char));
     if (data_block == NULL) {
         printf("String too long!\n");
@@ -35,6 +44,7 @@ static ac_string_t create(const char *text) {
     string.data = data_block;
 
 
+    // Copy each letter into string object.
     for (int i = 0; i < read_lenght; ++i) {
         string.data[i] = text[i];
     }
@@ -46,12 +56,15 @@ static ac_string_t create(const char *text) {
 // Action: Destroys & frees the string object.
 // Arguments: Takes in string object.
 // Changes: modifies the string object.
-static void destroy(ac_string_t *string) {
+static void destroy(ac_string_t *string)
+{
+    // Validate string object.
     if (string->lenght == 0) {
         printf("No string found to destroy!\n");
         return;
     }
 
+    // Destroy string object.
     string->lenght = 0;
     free(string->data);
     string->data = NULL;
@@ -61,7 +74,8 @@ static void destroy(ac_string_t *string) {
 // Arguments: Takes in string object.
 // Changes: Doesn't modify the string object.
 // Returns: address to const string literal.
-const char* get(const ac_string_t *string) {
+const char* get(const ac_string_t *string)
+{
     if (string->lenght == 0) {
         printf("No string to provide!\n");
         return NULL; 
@@ -70,7 +84,10 @@ const char* get(const ac_string_t *string) {
     return (const char *)string->data;
 }
 
-int match_multiple_char_string(const ac_string_t *text, const ac_string_t *match) {
+// Action: Used only with match function.
+// Desc: Used when match function got a string longer then one character.
+int match_multiple_char_string(const ac_string_t *text, const ac_string_t *match)
+{
     // Validate text & match strings.
     if (match->lenght <= 0) {
         printf("No matching string provided!\n");
@@ -139,7 +156,10 @@ int match_multiple_char_string(const ac_string_t *text, const ac_string_t *match
     return AC_GOOD;
 }
 
-int match_single_char_string(const ac_string_t *text, const ac_string_t *match) {
+// Action: Used only with match function.
+// Desc: Used when match function got a string with one character.
+int match_single_char_string(const ac_string_t *text, const ac_string_t *match)
+{
     // Validate text & match strings.
     if (match->lenght <= 0) {
         printf("No matching string provided!\n");
@@ -171,6 +191,8 @@ int match_single_char_string(const ac_string_t *text, const ac_string_t *match) 
 // Returns: 0 for 'found' | 1 for 'not found'.
 static int match (const ac_string_t *text, const ac_string_t *match) {
     int result = -1;
+
+    // Redirect to correct function based on match string object lenght.
     if (match->lenght > 1) {
         result = match_multiple_char_string(text, match);
     } else {
@@ -184,9 +206,15 @@ static int match (const ac_string_t *text, const ac_string_t *match) {
 // Arguments: Takes in const string literal.
 // Changes: Doesn't modify the string literal taken in.
 // Changes: Modifies the string object.
-static void change (ac_string_t *string, const char *text) {
+static void change (ac_string_t *string, const char *text)
+{
+    // Validate string object, string literal.
     if (string->lenght <= 0) {
         printf("No matching string provided!\n");
+        return;
+    }
+    if (text == NULL) {
+        printf("No text provided!\n");
         return;
     }
     size_t text_len = strlen(text);
@@ -195,6 +223,7 @@ static void change (ac_string_t *string, const char *text) {
         return;
     }
 
+    // Allocate new data block for string literal, free previous block, assign.
     char *new_block = malloc(text_len * sizeof(char));
     if (new_block == NULL) {
         printf("No memory for changing string contents!\n");
@@ -206,7 +235,9 @@ static void change (ac_string_t *string, const char *text) {
     return;
 }
 
-void ac_lib_init_string(void) {
+// Action: Makes ac_string functions available.
+void ac_lib_init_string(void)
+{
     ac_string.create = create;
     ac_string.destroy = destroy;
     ac_string.get = get;
