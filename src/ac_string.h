@@ -7,34 +7,41 @@ typedef struct ac_string_t {
 } ac_string_t;
 
 typedef struct AC_STRING_CLASS {
-    // Action: Creates string object.
-    // Arguments: Takes in a const string literal.
-    // Changes: Doesn't modify the string literal taken in.
-    // Returns: string object.
-    ac_string_t (*create) (const char *text);
+    //// Functions for ac_string_t object.
+    // Action: Creates string object on the heap.
+    // Argumens: string literal.
+    // Returns: address to string object.
+    ac_string_t * (*create) (const char *string_literal);
 
-    // Action: Destroys & frees the string object.
-    // Arguments: Takes in string object.
-    // Changes: modifies the string object.
-    void (*destroy) (ac_string_t *string);
+    // Action: Frees and sets to null string object.
+    // Arguments: string object.
+    // Mutation: string object.
+    void (*destroy) (ac_string_t *object);
 
-    // Action: Gets the address of the string.
-    // Arguments: Takes in string object.
-    // Changes: Doesn't modify the string object.
+    // Action: Gets address of string literal from inside string object.
+    // Arguments: const string object.
     // Returns: address to const string literal.
-    const char* (*get) (const ac_string_t *string);
+    const char * (*get) (const ac_string_t *object);
 
-    // Action: Checks if the match object is present in the string object.
-    // Arguments: Takes in two string objects.
-    // Changes: Doesn't change either string object.
+    // Action: Checks if match string object is present in text string object.
+    // Arguments: 2 string objects.
+    // Args order: [object, match].
     // Returns: 0 for 'found' | 1 for 'not found'.
-    int (*match) (const ac_string_t *string, const ac_string_t *match);
+    int (*match) (const ac_string_t *object, const ac_string_t *match);
 
-    // Action: Changes the text inside the string object.
-    // Arguments: Takes in const string literal.
-    // Changes: Doesn't modify the string literal taken in.
-    // Changes: Modifies the string object.
-    void (*change) (ac_string_t *string, const char *text);
+    // Action: Changes text inside string object.
+    // Arguments: string object, string literal.
+    // Args order: [object, literal]
+    // Mutation: string object.
+    void (*change) (ac_string_t *object, const char *string_literal);
+
+    //// Tracking created objects.
+    ac_string_t **tracked_objects_list;
+    size_t tracked_objects_amount;
+    size_t tracking_objects_limit;
+
+    // Action: Calls destroy function for each tracked (created) object that isnt already destroyed.
+    void (*destructor) (void);
 } AC_STRING_CLASS;
 
 extern AC_STRING_CLASS ac_string;

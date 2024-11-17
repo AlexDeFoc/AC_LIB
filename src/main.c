@@ -23,9 +23,9 @@ int main()
 
     /*
     // String testing.
-    ac_string_t src = ac_string.create("Testing works!\n");
-    printf("%s\n", ac_string.get(&src));
-    ac_string.destroy(&src);
+    ac_string_t *src = ac_string.create("Testing works!\n");
+    printf("%s\n", ac_string.get(src));
+    ac_string.destructor();
     */
 
     /*

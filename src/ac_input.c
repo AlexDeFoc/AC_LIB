@@ -225,7 +225,6 @@ static void destructor (void)
     for (size_t i = 0; i < ac_input.tracked_objects_amount; i++) {
         if (ac_input.tracked_objects_list[i] != NULL) {
             destroy(ac_input.tracked_objects_list[i]);
-            printf("Destroyed: %p\n", ac_input.tracked_objects_list[i]);
         }
     }
 
@@ -237,7 +236,7 @@ static void destructor (void)
 // Action: Makes ac_input functions available.
 void ac_lib_init_input(void)
 {
-    // Assign as_input functions.
+    // Assign functions to ac_input class.
     ac_input.create = create;
     ac_input.destroy = destroy;
     ac_input.receive = receive;
@@ -245,7 +244,7 @@ void ac_lib_init_input(void)
     ac_input.reset = reset;
     ac_input.destructor = destructor;
 
-    // Initialize values and allocate memory for ac_lib class.
+    // Initialize values and allocate memory for ac_input class.
     ac_input.tracked_objects_amount = 0;
     ac_input.tracking_objects_limit = 4;
     ac_input_t **data_list = malloc(ac_input.tracking_objects_limit * sizeof(ac_input_t *));

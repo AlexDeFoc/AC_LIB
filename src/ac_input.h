@@ -42,7 +42,7 @@ typedef struct AC_INPUT_CLASS {
     // Changes: Modifies the input object.
     void (*reset) (ac_input_t *input);
 
-    //// Tracking input objects added.
+    //// Tracking created objects.
     ac_input_t **tracked_objects_list;
     size_t tracked_objects_amount;
     size_t tracking_objects_limit;
