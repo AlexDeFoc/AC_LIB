@@ -47,6 +47,9 @@ For example in the AC_STRING module, you have the _"ac_string_t"_ object type an
 This structure provides safety and ease of use. Avoiding any unexpected or undefined behaviour
 expected from manual use of string literals.
 
+## Important feature!
+Each module contains a destructor function. This function destroys each undestroyed object created.
+So you don't have to free or destroy manually each object. You can but you aren't obligated!
 
 # AC_STRING functions
 * Create
@@ -54,14 +57,16 @@ expected from manual use of string literals.
 * Get
 * Match
 * Change
+* Destructor
 
 # AC_VECTOR functions
 * Create
 * Destroy
-* Get
-* Change
 * Push
 * Pop
+* Get
+* Change
+* Destructor
 
 # AC_INPUT functions
 * Create
@@ -69,5 +74,8 @@ expected from manual use of string literals.
 * Receive
 * Get
 * Reset
+* Destructor
+
+## For detail use of each module check out the test directory.
 
 ## Documentation is provided in the header & source files for each module. Very clearly explained.
