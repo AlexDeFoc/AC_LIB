@@ -4,6 +4,7 @@
 ## Contents:
 * AC_STRING
 * AC_VECTOR
+* AC_INPUT
 
 
 ## How to use a module?
@@ -61,5 +62,12 @@ expected from manual use of string literals.
 * Change
 * Push
 * Pop
+
+# AC_INPUT functions
+* Create
+* Destroy
+* Receive
+* Get
+* Reset
 
 ## Documentation is provided in the header & source files for each module. Very clearly explained.

@@ -1,7 +1,8 @@
 #define AC_LIB_STRING
 #define AC_LIB_VECTOR
+#define AC_LIB_INPUT
 
-#include <ac_lib.h>
+#include "ac_lib.h"
 
 #include <stdio.h>
 
@@ -17,11 +18,17 @@ int main()
     // Init vector library.
     ac_lib_init_vector();
 
+    // Init input library.
+    ac_lib_init_input();
+
+    /*
     // String testing.
     ac_string_t src = ac_string.create("Testing works!\n");
     printf("%s\n", ac_string.get(&src));
     ac_string.destroy(&src);
+    */
 
+    /*
     // Vector testing.
     ac_vector_t vec = ac_vector.create(sizeof(int));
     printf("Vec item data size: %zu\n", vec.item_data_size);
@@ -48,13 +55,22 @@ int main()
     ac_vector_t vec2 = ac_vector.create(sizeof(Player));
     printf("Data size of item in vec2: %zu\n", vec2.item_data_size);
 
-    /* Heavy test */
-    /*
-    Player p;
-    ac_vector.push(&vec2, &p);
+    // Heavy test
+    //Player p;
+    //ac_vector.push(&vec2, &p);
+
+    //ac_vector.destroy(&vec2);
     */
 
-    ac_vector.destroy(&vec2);
+    /*
+    // Input testing.
+    ac_input_t input = ac_input.create(0);
+    ac_input.receive(&input);
+    const char *input_string = ac_input.get(&input);
+    printf("Input got: %s\n", input_string);
+    ac_input.reset(&input);
+    ac_input.destroy(&input);
+    */
 
     return 0;
 }
