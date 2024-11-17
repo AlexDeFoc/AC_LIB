@@ -165,13 +165,13 @@ static void receive (ac_input_t *object)
 static const char *get (const ac_input_t *object)
 {
     // Validate input object.
-    if (input == NULL) {
+    if (object == NULL) {
         printf("Null input object!\n");
         return NULL;
     }
 
     // Return input object data.
-    return (const char*)input->data;
+    return (const char*)object->data;
 }
 
 // Action: Destorys then creates a new input object.
