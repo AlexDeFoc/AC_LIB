@@ -37,6 +37,7 @@ int main()
     ac_vector.destructor();
     */
 
+    /*
     // String+Vector testing
     ac_string_t *s_v = ac_string.create("Test string+vector");
     ac_vector_t *vec_s = ac_vector.create();
@@ -46,6 +47,7 @@ int main()
     ac_string.destructor();
     ac_vector.destructor();
     ac_vector.destructor();
+    */
 
     /*
     // Input testing.
