@@ -11,7 +11,7 @@
 #include "ac_vector.h"
 #endif
 
-// Introduced in v1.2 - coming soon
+// Introduced in v1.2
 #ifdef AC_LIB_INPUT
 #include "ac_input.h"
 #endif
