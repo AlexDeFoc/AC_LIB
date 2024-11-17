@@ -1,13 +1,17 @@
+#include "ac_input.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "ac_input.h"
 
 #define AC_GOOD 0
 #define AC_BAD 1
 
 AC_INPUT_CLASS ac_input;
+
+/* Dictionary:
+'OOM': Out of memory.
+*/
 
 // Action: Creates input object.
 // Args type: const size_t.

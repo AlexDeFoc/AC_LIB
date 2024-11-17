@@ -1,14 +1,16 @@
 #ifndef AC_LIB_INPUT_MODULE
 #define AC_LIB_INPUT_MODULE
 
-#include <stdint.h>
-
 typedef struct ac_input_t {
     char *data;
     size_t lenght;
     size_t input_limit;
-    uint8_t unlimited_input;
+    unsigned int unlimited_input;
 } ac_input_t;
+
+/* Dictionary:
+'OOM': Out of memory.
+*/
 
 typedef struct AC_INPUT_CLASS {
     // Action: Creates input object.
