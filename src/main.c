@@ -64,13 +64,14 @@ int main()
 
     /*
     // Input testing.
-    ac_input_t input = ac_input.create(0);
-    ac_input.receive(&input);
-    const char *input_string = ac_input.get(&input);
+    ac_input_t *input = ac_input.create(0);
+    ac_input_t *i2 = ac_input.create(0);
+    ac_input_t *i3 = ac_input.create(0);
+    ac_input.receive(input);
+    const char *input_string = ac_input.get(input);
     printf("Input got: %s\n", input_string);
-    ac_input.reset(&input);
-    ac_input.destroy(&input);
-    */
 
+    ac_input.destructor();
+    */
     return 0;
 }

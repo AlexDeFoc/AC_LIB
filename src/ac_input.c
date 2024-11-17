@@ -15,16 +15,21 @@ AC_INPUT_CLASS ac_input;
 // Desc: The input limit can be 0 or over 0. If given 0 then it means there is not limit.
 // Warning: Size_t is an unsigned type meaning if a negative value is given it underflows.
 // Changes: The primitive is not modified.
-// Returns: input object.
-static ac_input_t create (const size_t input_limit)
+// Returns: address to input object.
+static ac_input_t *create (const size_t input_limit)
 {
+    // Init empty object on the heap.
+    ac_input_t *input = malloc(sizeof(ac_input_t));
+    if (input == NULL) {
+        printf("Not enough memory for creating input object!\n");
+        return NULL;
+    }
+
     // Initialize empty input object.
-    ac_input_t input = {
-        .data = NULL,
-        .lenght = 0,
-        .input_limit = 0,
-        .unlimited_input = 0
-    };
+    input->data = NULL;
+    input->lenght = 0;
+    input->input_limit = 0;
+    input->unlimited_input = 0;
 
     // Validate arguments.
     if (input_limit < 0) {
@@ -33,27 +38,43 @@ static ac_input_t create (const size_t input_limit)
     }
 
     // Set unlimited input status.
-    if (input_limit == 0) input.unlimited_input = 1;
+    if (input_limit == 0) input->unlimited_input = 1;
 
     // Set input limit based on input limit taken in.
-    char *data_block = NULL;
-
     if (input_limit == 0) {
-        input.input_limit = 100;
+        input->input_limit = 100;
     }
     else if (input_limit > 0) {
-        input.input_limit = input_limit;
+        input->input_limit = input_limit;
     }
 
     // Allocate data_block.
-    data_block = calloc(input.input_limit + 1, sizeof(char));
+    char *data_block = NULL;
+    data_block = calloc(input->input_limit + 1, sizeof(char));
     if (data_block == NULL) {
         printf("Not enough memory for allocating space for input object!\n");
         return input;
     }
 
     // Assign data block.
-    input.data = data_block;
+    input->data = data_block;
+
+    // Track input object in class object list;
+    // Enlarge list if needed.
+    if (ac_input.tracked_objects_amount + 1 >= ac_input.tracking_objects_limit) {
+        ac_input_t **new_data_list = realloc(ac_input.tracked_objects_list, ac_input.tracking_objects_limit * 2 * sizeof(ac_input_t *));
+        if (new_data_list == NULL) {
+            printf("Not enough memory to widen tracking objects list!\n");
+            return input;
+        }
+
+        ac_input.tracked_objects_list = new_data_list;
+        ac_input.tracking_objects_limit *= 2;
+    }
+
+    // Add input object to list.
+    ac_input.tracked_objects_list[ac_input.tracked_objects_amount] = input;
+    ac_input.tracked_objects_amount++;
 
     // Exit good.
     return input;
@@ -70,7 +91,6 @@ static void destroy (ac_input_t *input)
         return;
     }
     if (input->data == NULL) {
-        printf("Input object is already destroyed!\n");
         return;
     }
 
@@ -80,6 +100,8 @@ static void destroy (ac_input_t *input)
     input->unlimited_input = 0;
     free(input->data);
     input->data = NULL;
+    free(input);
+    input = NULL;
 
     // Exit good.
     return;
@@ -191,19 +213,47 @@ static void reset (ac_input_t *input)
 
     // Destroy and create input object.
     destroy(input);
-    *input = create(input_limit);
+    input = create(input_limit);
 
     // Exit good.
+    return;
+}
+
+// Action: Calls destroy function for each tracked (created) object that isnt already destroyed.
+static void destructor (void)
+{
+    for (size_t i = 0; i < ac_input.tracked_objects_amount; i++) {
+        if (ac_input.tracked_objects_list[i] != NULL) {
+            destroy(ac_input.tracked_objects_list[i]);
+            printf("Destroyed: %p\n", ac_input.tracked_objects_list[i]);
+        }
+    }
+
+    free(ac_input.tracked_objects_list);
+
     return;
 }
 
 // Action: Makes ac_input functions available.
 void ac_lib_init_input(void)
 {
+    // Assign as_input functions.
     ac_input.create = create;
     ac_input.destroy = destroy;
     ac_input.receive = receive;
     ac_input.get = get;
     ac_input.reset = reset;
+    ac_input.destructor = destructor;
+
+    // Initialize values and allocate memory for ac_lib class.
+    ac_input.tracked_objects_amount = 0;
+    ac_input.tracking_objects_limit = 4;
+    ac_input_t **data_list = malloc(ac_input.tracking_objects_limit * sizeof(ac_input_t *));
+    if (data_list == NULL) {
+        printf("Not enough memory for creating tracking objects list!\n");
+        return;
+    }
+    ac_input.tracked_objects_list = data_list;
+
     return;
 }

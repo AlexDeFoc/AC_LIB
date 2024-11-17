@@ -11,14 +11,15 @@ typedef struct ac_input_t {
 } ac_input_t;
 
 typedef struct AC_INPUT_CLASS {
+    //// Functions for ac_input_t object.
     // Action: Creates input object.
     // Arguments: Takes in "const size_t" primitive.
     // Desc: The primitive represents the input limit.
     // Desc: The input limit can be 0 or over 0. If given 0 then it means there is not limit.
     // Warning: Size_t is an unsigned type meaning if a negative value is given it underflows.
     // Changes: The primitive is not modified.
-    // Returns: input object.
-    ac_input_t (*create)(size_t input_limit);
+    // Returns: address input object.
+    ac_input_t *(*create)(size_t input_limit);
 
     // Action: Destroys input object.
     // Arguments: Takes in input object.
@@ -40,6 +41,14 @@ typedef struct AC_INPUT_CLASS {
     // Arguments: Takes in input object.
     // Changes: Modifies the input object.
     void (*reset) (ac_input_t *input);
+
+    //// Tracking input objects added.
+    ac_input_t **tracked_objects_list;
+    size_t tracked_objects_amount;
+    size_t tracking_objects_limit;
+
+    // Action: Calls destroy function for each tracked (created) object that isnt already destroyed.
+    void (*destructor) (void);
 } AC_INPUT_CLASS;
 
 extern AC_INPUT_CLASS ac_input;
