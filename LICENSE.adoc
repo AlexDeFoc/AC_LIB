@@ -1,0 +1,52 @@
+= AC_LIB collection - license
+Sava Alexandru-Andrei
+:doctype: article
+:toc: macro
+:source-highlighter: coderay
+:icons: none
+
+== Purpose
+I, Sava Alexandru-Andrei, as the author and owner of the AC_LIB collection,
+declare it free to use in any type of projects, including games, applications,
+and other software, for any purpose - commercial, hobbyist, or otherwise.
+
+The collection is free to distribute as part of your software to anyone. It is
+intended to be a toolbox and a community-driven effort to simplify and enhance
+software development.
+
+The libraries within the AC_LIB collection may be used in both open-source and
+closed-source projects.
+
+== Requirements
+1. Credit the creators:
+The header files of the library you use, modify, contribute to, or distribute
+must include the names, usernames, or pseudonyms of the original authors and
+contributors, as specified in the contributing file. Contributors may choose to
+be credited under their real name, username, or an anonymous pseudonym.
+
+2. Include a copy of the license:
+You must include a copy of the AC_LIB collection license in your project to
+ensure the terms of use are preserved.
+
+3. Any act of contribution should follow the practices and guidelines detailed
+in the _CONTRIBUTION_ file.
+
+4. The AC_LIB collection should not be used for producing any harm or malicious
+code that may produce damages.
+
+== Termination clause
+If you fail to comply with the AC_LIB collection license and use the
+collection’s libraries for commercial or public purposes that provide financial
+gain, popularity, or fame (excluding hobby or personal use that does not attract
+significant public attention, or educational use for learning programming), your
+right to use the collection will be terminated, and you must either cease using
+it or bring your usage into compliance with the terms of the license within
+three months.
+
+== Liability
+The AC_LIB collection is provided "as-is," without warranty of any kind, express
+or implied. The authors and contributors shall not be held liable for any
+damages, claims, or other issues arising from the use of its libraries,
+including indirect, incidental, or consequential damages. This license serves to
+guide the purpose of the collection, outline usage requirements, and protect its
+contributors.

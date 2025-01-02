@@ -1,0 +1,106 @@
+= AC - get number from buffer - library documentation
+Sava Alexandru-Andrei
+:doctype: article
+:toc: macro
+:source-highlighter: coderay
+:icons: none
+
+== Library purpose
+Get the value number from a buffer or string literal.
+
+For example: char *string = "123" then the number gotten will be 123.
+
+*Note*: the buffer has to contain number characters! For example: '0', '1'...
+
+== Functions available
+ac_size_t ac_get_number_from_buffer(
+
+void *input_buffer,
+
+ac_signed_size_t input_buffer_length,
+
+void *output_number,
+
+ac_signed_size_t output_number_type_size)
+
+== Functions parameters explanation
+
+1. ac_get_number_from_buffer:
+
+* returns a unsigned error code
+* parameters:
+** takes in a buffer such as a string literal or array
+** takes in a value/number length of of the buffer
+** takes in a pointer to a variable into which to store the output number
+** takes in the size of the type of the output number variable. Use *sizeof*.
+
+== Syntax guide
+- when a macro expands to two things, it's based on the system architecture,
+either 32 or 64 bit
+
+== Error codes
+- 0 - function exited successfully
+- 1 - _input buffer_ is null
+- 2 - _input buffer length_ is smaller or equal to zero
+- 3 - pointer to _output number_ is null
+- 4 - _output number type size_ is smaller or equal to zero
+- 5 - the _length of the input buffer_ provided is larger than the output number
+type supports (which would've led to an overflow if the function didn't return)
+- 6 - the character just read in the _input buffer_ is not a number (smaller than
+'0' or larger than '9')
+
+== Macro to take note of
+- AC_ERROR_CODE_GET_NUMBER_FROM_BUFFER_NOT_A_NUMBER: expands to 6
+
+== Explanations/reasons behind macros
+
+=== Types for amount bytes
+
+==== Macros:
+- AC_TYPE_BYTES_1
+- AC_TYPE_BYTES_2
+- AC_TYPE_BYTES_4
+- AC_TYPE_BYTES_8 (64 bit systems only)
+- AC_TYPE_BYTES_MAX (expands to AC_TYPE_BYTES_4 or AC_TYPE_BYTES_8)
+
+==== Reasons:
+- Provide the ability to check how many bytes have been provided inside the
+_output_number_type_size_ parameter
+- Have a size for the max amount of bytes for the largest type supported by
+the system, either 32 or 64 bits
+
+=== Types for types lengths
+
+==== Macros:
+- AC_TYPE_BYTES_1_LENGTH
+- AC_TYPE_BYTES_2_LENGTH
+- AC_TYPE_BYTES_4_LENGTH
+- AC_TYPE_BYTES_8_LENGTH (64 bit systems only)
+- AC_TYPE_BYTES_MAX_LENGTH (expands to AC_TYPE_BYTES_4_LENGTH or
+AC_TYPE_BYTES_8_LENGTH)
+
+==== Reasons:
+- Provide the ability to check if the _input_buffer_length_ is larger then the
+max value supported by the _output_number_ type
+- Have a length for the max value of the largest type supported by the system,
+either 32 or 64 bits
+
+=== Types for safety
+
+==== Macros:
+- ac_size_t (expands to int32_t or int64_t)
+- ac_signed_size_t (expands to uint32_t or uint64_t)
+
+==== Reasons:
+- the type size_t is unsigned meaning if the user provides a negative value for
+the parameteres _input_buffer_length_ or _output_number_type_size_ then it will
+underflow and lead to undefined behaviour
+
+=== Building
+* the library uses CMake to build the library
+* scripts available are for the platforms:
+** windows (which is configured to use ninja as the build system)
+
+== Author & Contribuitors
+* Year: 2025
+* Author: Sava Alexandru-Andrei

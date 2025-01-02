@@ -1,0 +1,52 @@
+= AC_LIB collection
+Sava Alexandru-Andrei
+:doctype: article
+:toc: macro
+:source-highlighter: coderay
+:icons: none
+
+== Purpose
+The goal of this collection is to offer software developers a toolbox full of
+libraries that help them code *faster*, *safer*, and *easier*. The collection
+maintains cross-platform compatibility with dynamically linked libraries,
+allowing users to upgrade to the latest libraries without recompiling their
+programs. The collection is community-driven and continuously growing.
+
+== C programming language
+The only programming language used in the collection is C, providing the best
+compatibility, freedom, and efficiency in programming.
+
+== Freedom to contribute, use, distribute
+The collection is under a custom license that offers the maximum amount of
+freedom for use while protecting the authors and contributors. It supports users
+with highly documented libraries and guides, easing the development process.
+
+For further details, please read the _CONTRIBUTING_ and _LICENSE_ files.
+
+== Libraries available:
+* ac_get_number_from_buffer
+
+== Libraries planned:
+* ac_get_buffer_between_two_chars
+* ac_get_buffer_from_number
+
+== What does AC_ prefix stand for?  
+It stands for _A C_, usually paired with AC_LIB meaning _A C library_.  
+The reason behind this convention is that in the C programming language, there
+are no namespaces, so the AC_ prefix is used to avoid conflicts.
+
+== Return codes convention  
+All functions return error codes upon encountering an edge case that doesn't
+align with their intended purpose. The error codes follow the pattern: _ac_
+followed by the function name and the specific error code name or purpose.  
+An example could be: _AC_GET_NUMBER_FROM_BUFFER_NOT_A_NUMBER_.
+
+== Authors & Contributors and their works (A-Z)
+
+**Authors**:
+
+* Sava Alexandru-Andrei:
+  ** ac_get_number_from_buffer
+
+**Contributors**:
+(Names of contributors will be listed here.)

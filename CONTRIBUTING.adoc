@@ -1,0 +1,230 @@
+= AC_LIB collection - Contributing Guide
+Sava Alexandru-Andrei
+:doctype: article
+:toc: macro
+:source-highlighter: coderay
+:icons: none
+
+== Prefix naming convention
+In the AC_LIB collection it is required to prefix with characters _ac__ your:
+
+* functions
+* header files
+* source files
+* macros
+* anything else that could potentially bring naming conflicts with external
+code from the users of the libraries
+
+== Coding style
+
+1. **variables**:
+   In the AC_LIB collection it is required to use camel_case naming.
+
+2. **structs**:
+   In the AC_LIB collection it is required to use Pascal case.
+
+3. **macros**:
+   In the AC_LIB collection it is required to use all uppercase letters.
+
+4. **separating words**:
+   In the AC_LIB collection it is very common to separate words in camel case.
+   This applies to macros, variables, structs, and any other code elements,
+   except for documentation where spaces are allowed.
+
+5. **commenting**:
+   Commenting your code is highly recommended. Your comments should be 80
+   characters long on a single line, with more than 80 characters wrapping to
+   the next line. The limit is 80 characters to provide better readability,
+   including the 80th character but not the 81st.
+
+== Modifying Existing Libraries
+1. **Preserve author and contributor credits**:
+   Ensure that the original authors and contributors are credited in the header
+   files of the library.
+
+2. **Add your credit**:
+   Include your full name, username, or an anonymous pseudonym in the AC_LIB
+   collection. If you choose an anonymous pseudonym, use the format
+   _anonymous #_ (where # is replaced by the next available index, starting
+   from 1).
+
+3. **Provide meaningful improvements**:
+   Contributions should provide significant value, such as bug fixes, code
+   style improvements, performance enhancements, optimizations, or other
+   improvements that elevate the quality of the library.
+
+4. **Follow the pull request format**:
+   When submitting a pull request, follow the format detailed in the
+   _Pull Request Format_ section below.
+
+5. **Document your changes**:
+   If you add, remove, or modify any functionality, ensure that your changes are
+   properly documented in the library’s documentation file. Follow the
+   guidelines outlined in the _Documentation Guide_ section below.
+
+== Adding a New Library
+1. **Library utility**:
+   Your library should provide utility that improves and simplifies software
+   development.
+
+2. **Dynamic library**:
+   Your library should be created to be dynamically linked. This helps with the
+   ease of upgrading libraries and improves space efficiency.
+
+3. **Edge case coverage**:
+   Aim to cover as many edge cases and possible undefined behaviors as possible.
+   Prioritize safety over performance by handling accidental misuse, such as
+   panicking or returning error codes.
+
+4. **Error handling**:
+   Follow the AC_LIB collection's pattern for error handling. Return error codes
+   in the case of unexpected behavior or edge-case hits, without printing text
+   to avoid performance overhead.
+
+5. **Documentation file**:
+   Your library must contain a documentation file named
+   _ac_library_documentation.adoc_. The AC_LIB collection exclusively uses
+   AsciiDoc for documentation due to its ease of readability and wide
+   compatibility across platforms. The documentation must follow the guidelines
+   detailed in the _Documentation Guide_ section.
+
+6. **Include test executables**:
+   It is highly recommended to include test executables to demonstrate the
+   potential usage of your libraries.
+
+7. **Platform compatibility**:
+   Ensure that your library supports both 32-bit and 64-bit systems, specifying
+   in the documentation if compatibility is limited to one of these.
+
+8. **Operating system agnosticism**:
+   Aim for operating system compatibility, though this is not mandatory.
+   Libraries should be easily adaptable for contributors working on different
+   platforms.
+
+9. **Folder structure**:
+   Follow the folder structure outlined in the _Project Folder Structure_
+   section below.
+
+10. **CMake usage**:
+    Use _CMake_ as the project toolchain generator. If you are familiar with
+    other tools that do not complicate compatibility or usability, they may also
+    be used.
+
+11. **C Programming Language Version**:
+    Your library should be compatible with the latest stable version of the
+    C programming language (currently C17). C24 is excluded as it is not yet
+    widely used.
+
+12. **Script language**:
+    The scripts inside your _scripts_ folder should be written in Bash, as users
+    of the AC_LIB collection typically have access to Git Bash or other
+    Bash environments.
+
+13. **Coding language**:
+    You must use English in all of your contributions, including pull requests,
+    documentation, and coding.
+
+== Pull Request Format
+Your pull request should include the following:
+
+1. **Appropriate label**:
+   Include a label indicating the type of contribution, such as:
+   - `bug-fix`
+   - `upgrade`
+   - `feature-proposal`
+   - `library-proposal`
+
+2. **Contribution explanation**:
+   Provide a detailed explanation (in English, if possible) of how your
+   contribution or library will benefit the AC_LIB collection.
+
+3. **List of contributors and authors**:
+   If you are submitting a new library, include a list of contributors and
+   authors who have worked on the contribution.
+
+== Documentation Guide
+Your documentation file should include the following sections, which all
+libraries must include:
+Each section can be in any order and with different section titles.
+
+1. **Library purpose**:
+   In this section, write a short (if possible) explanation of what the library
+   tries to achieve. If the library has multiple purposes, use a 
+   bullet point list.
+
+2. **Functions available**:
+   In this section, write the functions, their parameters, and return types.
+   Each parameter should be on its own line for better readability.
+
+3. **Functions parameters explanation**:
+   In this section, write a very short description for each parameter explained
+   in the previous section. This is necessary because parameter names are often
+   short, with little to no description.
+
+4. **Syntax guide (if needed)**:
+   In this section, explain shorthand abbreviations or any other expansions of
+   text or further explanations of parts of the documentation file.
+
+5. **Error codes**:
+   In this section, list each return error code, including their respective
+   description. These should be informative so users can refer to them in
+   their code.
+
+6. **Macros to take note of**:
+   In this section, list macros that usually expand to error codes. This helps
+   users to anticipate errors and cover them explicitly.
+
+7. **Explanations/reasons behind macros**:
+   In this section, explain the reasoning behind any macros used in the header
+   files, especially those that help the code and library.
+
+8. **Authors & Contributors (A-Z)**:
+   In this section, list the authors and contributors who have worked on the
+   library in alphabetical order.
+
+9. **Documentation formatting**:
+   Your documentation in the AsciiDoc files should follow the 80-character
+   limit per line rule. After reaching the 80th character, place the next words
+   on the next line for easier readability.
+
+10. **Building**:
+   Your documentation should include an explanation of how to build the library
+   and what scripts are available to ease this process.
+
+== Folder structure guide  
+It is highly recommended to use the following file structure (almost mandatory).
+If possible, adhere to it as it simplifies the overall project structure.
+Each folder specific to a platform is optional, for example, if you are on
+Windows, you won't need to create the `linux` or `darwin` folder.
+
+1. **output**:
+   * windows (folder)
+     ** .lib (file)
+     ** .dll (file)
+     ** .exe (file)
+     ** .h (file)
+   * linux_arch (folder)
+   * linux_debian (folder)
+   * linux_..._any_other_distro (folder)
+   * darwin (folder)
+   ...
+
+2. **scripts**:
+   These should build the CMake file and copy the build library, executables,
+   and header files into the output folder.
+   - run_windows.sh (file)
+   - run_linux_arch.sh (file)
+   ...
+
+3. **src**:
+   * library
+   * tests
+     ** test_app_1.c
+
+4. **CMakeLists.txt**
+
+5. **.gitignore**:
+   This should contain the `build` and `.cache` folders.
+
+6. **ac_library_documentation.adoc**:
+   This is the library documentation.
