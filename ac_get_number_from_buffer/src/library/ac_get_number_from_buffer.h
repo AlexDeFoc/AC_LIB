@@ -1,3 +1,9 @@
+/*
+ * "ac_get_number_from_buffer" library part of the AC_LIB collection.
+ * Year: 2025
+ * Author: Sava Alexandru-Andrei
+ */
+
 #ifndef AC_GET_NUMBER_FROM_BUFFER_H
 #define AC_GET_NUMBER_FROM_BUFFER_H
 
